@@ -1,26 +1,39 @@
 terraform {
   required_version = ">= 1.10"
 
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.47" # This locks it to version 5.x, preventing breaking 6.0 changes
+    }
+  }
+
   backend "s3" {
     bucket = "my-test-tf-vpc"
     #path where state file resides
-    key = "dev/boss.tfstate"
-    region = "us-east-1"
+    key          = "dev/boss.tfstate"
+    region       = "us-east-1"
     use_lockfile = true
-    encrypt = true    #encrypt state file in s3
-    
+    encrypt      = true #encrypt state file in s3
+
   }
 }
+
+#variable "role_to_assume" {
+#  description = "Used for provider role"
+#  type        = string
+#}
 
 provider "aws" {
   region = "us-east-1"
 
+  #as we already using OIDC roles in action so no need to use it here again using var, if you have different role for terraform then you can put here in variable as default
   # in prod we never use hardcoded access keys, we use role like below
   #assume_role {
   #  # The ARN of the IAM role you want Terraform to assume
-  #  role_arn     = "arn:aws:iam::123456789012:role/TerraformDeploymentRole"
-    
+  #  role_arn = var.role_to_assume
+
   #  # Optional: A session name to identify who/what made the changes in AWS CloudTrail
-  #  session_name = "TerraformSession"
+  #  session_name = "GitHubActions-TF"
   #}
 }
