@@ -1,6 +1,13 @@
 terraform {
   required_version = ">= 1.10"
 
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0" # This locks it to version 5.x, preventing breaking 6.0 changes
+    }
+  }
+
   backend "s3" {
     bucket = "my-test-tf-vpc"
     #path where state file resides
