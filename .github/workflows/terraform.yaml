@@ -52,7 +52,7 @@ jobs:
                 directory: .
                 framework: terraform
                 soft_fail: false        #fails the job if checkov finds violation
-                quite: true
+                quiet: true
             #- name: Setup Infracost
             #  uses: infracost/actions/setup@v2
             #  with: 
@@ -114,4 +114,3 @@ jobs:
             - name: Terraform apply
               run: terraform apply -auto-approve
 
-              
