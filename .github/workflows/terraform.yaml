@@ -4,7 +4,7 @@ on:
         branches: ["staging","main"]
         types: [opened, synchronize, ready_for_review, reopened]
     push:
-        branches: ["main"]
+        branches: ["main","staging"]
 
 permissions:            #per for OIDC token generation and PR comments
     id-token: write
