@@ -26,6 +26,7 @@ resource "aws_instance" "test_ec2" {
   for_each                    = local.instances
   ami                         = each.value.ami
   instance_type               = each.value.instance_type
+  ebs_optimized               = true
   key_name                    = "my-kp"
   subnet_id                   = each.value.subnet_id
   vpc_security_group_ids      = each.key == "ubuntu" ? [module.vpc.sg_public] : [module.vpc.sg_private]

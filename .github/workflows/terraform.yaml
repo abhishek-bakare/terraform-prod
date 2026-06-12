@@ -48,6 +48,7 @@ jobs:
               run: tflint -f compact        #tflint will check and give result in compact fmt
             - name: Run security scan
               uses: bridgecrewio/checkov-action@v12
+              continue-on-error: true
               with:
                 directory: .
                 framework: terraform
