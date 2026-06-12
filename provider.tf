@@ -4,17 +4,17 @@ terraform {
   backend "s3" {
     bucket = "my-test-tf-vpc"
     #path where state file resides
-    key = "dev/boss.tfstate"
-    region = "us-east-1"
+    key          = "dev/boss.tfstate"
+    region       = "us-east-1"
     use_lockfile = true
-    encrypt = true    #encrypt state file in s3
-    
+    encrypt      = true #encrypt state file in s3
+
   }
 }
 
 variable "aws_assume_role" {
   description = "Used for provider role"
-  type = string
+  type        = string
 }
 
 provider "aws" {
@@ -22,10 +22,10 @@ provider "aws" {
 
   # in prod we never use hardcoded access keys, we use role like below
   assume_role {
-  #  # The ARN of the IAM role you want Terraform to assume
-    role_arn     = var.aws_assume_role
-    
-  #  # Optional: A session name to identify who/what made the changes in AWS CloudTrail
+    #  # The ARN of the IAM role you want Terraform to assume
+    role_arn = var.aws_assume_role
+
+    #  # Optional: A session name to identify who/what made the changes in AWS CloudTrail
     session_name = "GitHubActions-TF"
   }
 }
