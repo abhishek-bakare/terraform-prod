@@ -63,7 +63,8 @@ jobs:
             - name: Terraform plan
               id: plan
               env:
-                TF_LOG: DEBUG
+                #TF_LOG: DEBUG
+                TF_VAR_role_to_assume: arn:aws:iam::156985228858:role/terraform-plan-role
               run: terraform plan -no-color -out=tfplan > plan.txt
               continue-on-error: true
             - name: Update PR with plan
@@ -115,5 +116,7 @@ jobs:
             - name: Terraform init
               run: terraform init
             - name: Terraform apply
+              env: 
+                TF_VAR_role_to_assume: arn:aws:iam::156985228858:role/terraform-apply-role
               run: terraform apply -auto-approve
 

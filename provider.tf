@@ -19,7 +19,7 @@ terraform {
   }
 }
 
-variable "role-to-assume" {
+variable "role_to_assume" {
   description = "Used for provider role"
   type        = string
 }
@@ -30,7 +30,7 @@ provider "aws" {
   # in prod we never use hardcoded access keys, we use role like below
   assume_role {
     #  # The ARN of the IAM role you want Terraform to assume
-    role_arn = var.role-to-assume
+    role_arn = var.role_to_assume
 
     #  # Optional: A session name to identify who/what made the changes in AWS CloudTrail
     session_name = "GitHubActions-TF"
