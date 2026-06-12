@@ -1,0 +1,124 @@
+name: Terraform Workflow
+on:
+    pull_request:
+        branches: ["staging","main"]
+        types: [opened, synchronize, ready_for_review, reopened]
+    push:
+        branches: ["main","staging"]
+
+permissions:            #per for OIDC token generation and PR comments
+    id-token: write
+    contents: read
+    pull-requests: write
+env:                    #to setup the tf env before reading .tf files we need to declare this
+    AWS_REGION: "us-east-1"
+    TF_VERSION: "1.10"
+    AWS_ACCOUNT_ID: "156985228858"
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+    cancel-in-progress: true  #true:old wk will be cancelled false: wait until finish old job
+
+jobs:
+    plan-and-security-check:
+        name: "Terraform plan and security check using checkov"
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+            - name: Configure AWS creds for plan role
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                role-to-assume: arn:aws:iam::156985228858:role/terraform-plan-role
+                aws-region: ${{ env.AWS_REGION }}
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+              with:
+                terraform_version: ${{ env.TF_VERSION }}
+            - name: Terraform format check
+              run: terraform fmt -check -recursive         #check: pipeline fail if any issue in tf file, recursive: depply scans all the dir
+            - name: Terraform init
+              run: terraform init
+            - name: Terraform validate
+              run: terraform validate
+            - name: Setup TFlint
+              uses: terraform-linters/setup-tflint@v4
+            - name: Run TFlint
+              run: tflint -f compact        #tflint will check and give result in compact fmt
+            - name: Run security scan
+              uses: bridgecrewio/checkov-action@v12
+              continue-on-error: true
+              with:
+                directory: .
+                framework: terraform
+                soft_fail: false        #fails the job if checkov finds violation
+                quiet: true
+            #- name: Setup Infracost
+            #  uses: infracost/actions/setup@v2
+            #  with: 
+            #    api-key: secrets.INFRACOSTAPI
+            #- name: Generate Infracost Breakdown
+            #  run: infracost breakdown --path . --format json --out-file infracost.json
+            - name: Terraform plan
+              id: plan
+              #env:
+                #TF_LOG: DEBUG
+                #not needed bcaz we already using OIDC same role
+                #TF_VAR_role_to_assume: arn:aws:iam::156985228858:role/terraform-plan-role
+              run: terraform plan -no-color -out=tfplan > plan.txt
+              continue-on-error: true
+            - name: Update PR with plan
+              uses: actions/github-script@v7
+              if: github.event_name == 'pull_request'
+              with:
+                github-token: ${{ github.token }}
+                script: |
+                    const fs = require('fs');       //import node.js filesystem
+                    const plan = fs.readFileSync('plan.txt','utf8');
+                    const output = `#### Terraform plan
+                    <details><summary>Show plan</summary>
+
+                    \`\`\`terraform\n
+                    ${plan}
+                    \`\`\`
+                    </details>
+
+                    *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+                    github.rest.issues.createComment({
+                        issue_number: context.issue.number,
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        body: output
+                    })
+            - name: Check plan status           #fail pipeline if plan step is failure
+              if: steps.plan.outcome == 'failure'
+              run: exit 1
+    apply:
+        name: "Terraform apply"
+        runs-on: ubuntu-latest
+        needs: plan-and-security-check
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        environment: production
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Configure AWS credential
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                role-to-assume: arn:aws:iam::156985228858:role/terraform-apply-role
+                aws-region: ${{ env.AWS_REGION }}
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+              with:
+                terraform_version: ${{ env.TF_VERSION }}
+            - name: Terraform init
+              run: terraform init
+            - name: Terraform apply
+              #env: 
+                #not needed bcaz we already using OIDC same role
+                #TF_VAR_role_to_assume: arn:aws:iam::156985228858:role/terraform-apply-role
+              run: terraform apply -auto-approve
+
