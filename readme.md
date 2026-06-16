@@ -17,4 +17,7 @@ Create Terraform workspace where you required and then create provider.tf like h
 
 #aws ec2 create-key-pair --key-name MyKeyPair --query "KeyMaterial" --output text > MyKeyPair.pem
 
+Lets see how to manage multi environment TF structure
+
+
 

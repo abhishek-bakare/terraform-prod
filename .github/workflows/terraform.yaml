@@ -40,9 +40,9 @@ jobs:
               run: terraform fmt -check -recursive         #check: pipeline fail if any issue in tf file, recursive: depply scans all the dir
             - name: Terraform init
               run: terraform init
-            - name: Terraform validate
+            - name: Terraform validate        #validate only check basic syntax errors(missing brackets or invalid var type, etc)
               run: terraform validate
-            - name: Setup TFlint
+            - name: Setup TFlint            #this will do advanced check like security issues, optimization errors or any inproper values like ec2 type t2.microooo, etc
               uses: terraform-linters/setup-tflint@v4
             - name: Run TFlint
               run: tflint -f compact        #tflint will check and give result in compact fmt
