@@ -12,7 +12,7 @@ To setup actions like as per IT industries we use below steps:
     - Block force pushes and deletions
 6. Add CODEOWNERS file in the .github dir so only assigned persons can review the code
   CODEOWNERS
-  ''' 
+  '''
     # Default reviewers for everything
     * @devops-team
 
@@ -57,5 +57,19 @@ To setup actions like as per IT industries we use below steps:
 10. Now we need to add role_arn to the provider.tf
     - If you are using multi aws accounts for diff envs like dev, staging, prod then you can use this repo strategy from provider.tf file like creating variable, etc.
     - If you have single account then no need to add role_arn block as when pipeline runs it already have short lived role created by OIDC roles, Tf can smartly used that.
-
-
+11. Now lets start to write the pipline
+    - Setup event triggers (pull_request, push)
+    - Setup Permissions (id-token: write,contents: read, pull-requests: write)
+    - Setup env for AWS_REGION, TF_VERSION, AWS_ACCOUNT_ID
+    - Do the concurrency step
+    - In the 1st job we are doing below things
+        - Checkout code
+        - Setup AWS credentials using aws-actions/configure-aws-credentials@v4
+        - Setup Terraform using hashicorp/setup-terraform@v3
+        - TF fmt check using terraform fmt -check -recursive
+        - TF init
+        - Setup TFlint using terraform-linters/setup-tflint@v4
+        - Run tflint -f compact
+        - Run checkov using bridgecrewio/checkov-action@v12
+        - If required setup Infracost action so get costing
+        - TF plan cmd terraform plan -no-color -out=tfplan > plan.txt

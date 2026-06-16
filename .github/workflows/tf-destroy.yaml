@@ -7,7 +7,7 @@ on:
                 required: true
                 type: choice
                 options:
-                    - Production
+                    - production
             confirm_destroy:
                 description: "Type DESTROY to confirm execution"
                 required: true
