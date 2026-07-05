@@ -14,14 +14,10 @@ output "my_pvt_subnet2" {
   value = aws_subnet.my_pvt_subnet2.id
 }
 
-output "sg_public" {
-  value = aws_security_group.sg_public.id
+output "my_vpc_id" {
+  value = aws_vpc.aws_vpc_myvpc.id
 }
 
-output "sg_private" {
-  value = aws_security_group.sg_private.id
-}
-
-output "sg_database" {
-  value = aws_security_group.sg_database.id
+output "vpc_cidr_block" {
+  value = aws_vpc.aws_vpc_myvpc.cidr_block
 }

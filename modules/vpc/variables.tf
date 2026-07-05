@@ -41,3 +41,8 @@ variable "pvt_subnet_cidr_2" {
   default     = "192.168.4.0/24"
 }
 
+variable "cluster_name" {
+  description = "Cluster name for Karpenter tag"
+  type = string
+}
+

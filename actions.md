@@ -73,3 +73,10 @@ To setup actions like as per IT industries we use below steps:
         - Run checkov using bridgecrewio/checkov-action@v12
         - If required setup Infracost action so get costing
         - TF plan cmd terraform plan -no-color -out=tfplan > plan.txt
+
+
+kubectl patch customresourcedefinitions nodepools.karpenter.sh --type="merge" --patch-file patch.json
+
+kubectl patch customresourcedefinitions nodeclaims.karpenter.sh --type="merge" --patch-file patch.json
+
+kubectl patch customresourcedefinitions ec2nodeclasses.karpenter.k8s.aws --type="merge" --patch-file patch.json

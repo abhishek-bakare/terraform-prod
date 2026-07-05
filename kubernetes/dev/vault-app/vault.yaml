@@ -1,0 +1,59 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hashicorp-vault
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://helm.releases.hashicorp.com'
+    chart: vault
+    targetRevision: 0.28.0
+    helm:
+      values: |
+        server:
+          # Ingress for vault UI 
+          ingress:         
+            enabled: true
+            ingressClassName: nginx
+            annotations:
+              nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+            hosts:
+              - host: vault.mycompany.test
+                paths:
+                  - /
+          # HA for vault
+          ha:
+            enabled: true
+            replicas: 2
+            raft:
+              enabled: true
+              setNodeId: true
+            config: |
+              ui = true
+              listener "tcp"{
+                tls_disable = 1
+                address = "[::]:8200"
+                cluster_address = "[::]:8201"
+                }
+              storage "raft" {
+                path = "/vault/data"
+                }
+              seal "awskms" {
+                region = "us-east-1"
+                kms-key-id = "44deb90a-148c-4099-84cd-4f89d53f2223"
+                }
+          dataStorage:
+            enabled: true
+            size: 5Gi
+            storageClass: gp3
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: vault
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+

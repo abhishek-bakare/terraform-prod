@@ -26,6 +26,7 @@ resource "aws_internet_gateway" "my_igw" {
 }
 
 #Creating public subnets for VPC
+# checkov:skip=CKV_AWS_130
 resource "aws_subnet" "my_pub_subnet1" {
   vpc_id                  = aws_vpc.aws_vpc_myvpc.id
   cidr_block              = var.pub_subnet_cidr_1
@@ -35,9 +36,12 @@ resource "aws_subnet" "my_pub_subnet1" {
     Name        = "${var.vpc_name}-public-subnet-1"
     Environment = var.vpc_env
     Terraform   = "true"
+    "kubernetes.io/role/elb" = "1"    # added for internet-facing LB's used by LBC
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   }
 }
 
+# checkov:skip=CKV_AWS_130
 resource "aws_subnet" "my_pub_subnet2" {
   vpc_id                  = aws_vpc.aws_vpc_myvpc.id
   cidr_block              = var.pub_subnet_cidr_2
@@ -47,6 +51,8 @@ resource "aws_subnet" "my_pub_subnet2" {
     Name        = "${var.vpc_name}-public-subnet-2"
     Environment = var.vpc_env
     Terraform   = "true"
+    "kubernetes.io/role/elb" = "1"     # added for internet-facing LB's used by LBC
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   }
 }
 
@@ -107,8 +113,9 @@ resource "aws_subnet" "my_pvt_subnet1" {
     Name                                     = "${var.vpc_name}-private-subnet-1"
     Environment                              = var.vpc_env
     Terraform                                = "true"
-    "kubernetes.io/role/internal-elb"        = "1"
-    "kubernetes.io/cluster/practice-cluster" = "shared"
+    "kubernetes.io/role/internal-elb"        = "1"     # added for internal LB's used by LBC
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    "karpenter.sh/discovery" = var.cluster_name        # used by Karp for launching nodes
   }
 }
 
@@ -120,8 +127,9 @@ resource "aws_subnet" "my_pvt_subnet2" {
     Name                                     = "${var.vpc_name}-private-subnet-2"
     Environment                              = var.vpc_env
     Terraform                                = "true"
-    "kubernetes.io/role/internal-elb"        = "1"
-    "kubernetes.io/cluster/practice-cluster" = "shared"
+    "kubernetes.io/role/internal-elb"        = "1"    # added for internal LB's used by LBC
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    "karpenter.sh/discovery" = var.cluster_name       # used by Karp for launching nodes
   }
 }
 
@@ -202,6 +210,27 @@ resource "aws_network_acl" "public_nacl" {
     to_port    = 22
   }
 
+  ingress {
+    protocol   = "udp"
+    rule_no    = 130
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
+  }
+
+  # ADD THIS: Allow ICMP (For Ping replies)
+  ingress {
+    protocol   = "icmp"
+    rule_no    = 140
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
+    icmp_type  = -1 # Allows all ICMP types
+    icmp_code  = -1 # Allows all ICMP codes
+  }
+
   #allowing all traffic out
   egress {
     protocol   = "-1"
@@ -213,99 +242,3 @@ resource "aws_network_acl" "public_nacl" {
   }
 }
 
-#security groups for public subnet
-resource "aws_security_group" "sg_public" {
-  vpc_id      = aws_vpc.aws_vpc_myvpc.id
-  name        = "${var.vpc_name}-pub-sg"
-  description = "Allow required rules"
-  tags = {
-    Name        = "${var.vpc_name}-pub-sg"
-    Environment = var.vpc_env
-    Terraform   = "true"
-  }
-
-  ingress {
-    protocol    = "tcp"
-    from_port   = 80
-    to_port     = 80
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "HTTP"
-  }
-
-  ingress {
-    protocol    = "tcp"
-    from_port   = 443
-    to_port     = 443
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "HTTPS"
-  }
-
-  ingress {
-    protocol    = "tcp"
-    from_port   = 22
-    to_port     = 22
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "SSH"
-  }
-
-  egress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow all outbound traffic"
-  }
-}
-
-#sg for pvt subnet
-resource "aws_security_group" "sg_private" {
-  vpc_id      = aws_vpc.aws_vpc_myvpc.id
-  name        = "${var.vpc_name}-sg-private"
-  description = "SGs for pvt subnets"
-  tags = {
-    Name        = "${var.vpc_name}-pvt-sg"
-    Environment = var.vpc_env
-    Terraform   = "true"
-  }
-
-  ingress {
-    protocol        = "-1"
-    from_port       = 0
-    to_port         = 0
-    security_groups = [aws_security_group.sg_public.id] #allowing only if it come from sg public
-  }
-
-  egress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-#sg for db
-resource "aws_security_group" "sg_database" {
-  vpc_id      = aws_vpc.aws_vpc_myvpc.id
-  name        = "${var.vpc_name}-sg-database"
-  description = "This is for DB"
-  tags = {
-    Name        = "${var.vpc_name}-pvt-sg"
-    Environment = var.vpc_env
-    Terraform   = "true"
-  }
-
-  ingress {
-    protocol        = "tcp"
-    from_port       = 5432
-    to_port         = 5432
-    security_groups = [aws_security_group.sg_private.id] #allowing only if it come from sg pvt subnet
-  }
-
-  egress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = [aws_vpc.aws_vpc_myvpc.cidr_block] # Only allow talk inside our VPC
-  }
-
-}
