@@ -46,7 +46,7 @@ spec:
           dataStorage:
             enabled: true
             size: 5Gi
-            storageClass: gp3
+            storageClass: gp3-dev-sc
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: vault
