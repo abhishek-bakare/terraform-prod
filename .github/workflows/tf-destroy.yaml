@@ -1,0 +1,50 @@
+name: Terraform destroy
+on:
+    workflow_dispatch:
+        inputs:
+            environment:
+                description: "Target Env"
+                required: true
+                type: choice
+                options:
+                    - production
+            confirm_destroy:
+                description: "Type DESTROY to confirm execution"
+                required: true
+                type: string
+permissions:
+    id-token: write
+    contents: read
+
+env:                    #to setup the tf env before reading .tf files we need to declare this
+    AWS_REGION: "us-east-1"
+    TF_VERSION: "1.10"
+    AWS_ACCOUNT_ID: "156985228858"
+
+jobs:
+    destroy:
+        name: "Destroying Infra"
+        runs-on: ubuntu-latest
+        environment: ${{ github.event.inputs.environment }}     #links to GH env for approval gate
+        steps:
+            - name: Verify confirmation
+              run: |
+                if [ ${{ github.event.inputs.confirm_destroy }} != "DESTROY" ]; then
+                echo "Error you must type exactly DESTROY"
+                exit 1
+                fi
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Setting up AWS creds
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                role-to-assume: arn:aws:iam::156985228858:role/terraform-plan-role
+                aws-region: ${{ env.AWS_REGION }}
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+              with:
+                terraform_version: ${{ env.TF_VERSION }}
+            - name: Terraform init
+              run: terraform init
+            - name: Terraform destroy
+              run: terraform destroy -auto-approve
