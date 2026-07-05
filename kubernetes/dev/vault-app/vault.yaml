@@ -43,6 +43,10 @@ spec:
                 region = "us-east-1"
                 kms-key-id = "44deb90a-148c-4099-84cd-4f89d53f2223"
                 }
+          nodeSelector:
+            karpenter.sh/capacity-type: "on-demand"
+            node.kubernetes.io/instance-type: "t3.small"
+
           dataStorage:
             enabled: true
             size: 5Gi
