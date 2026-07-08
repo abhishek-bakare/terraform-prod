@@ -62,8 +62,9 @@ spec:
 
           dataStorage:
             enabled: true
-            size: 5Gi
+            size: 10Gi
             storageClass: gp3-dev-sc
+            accessMode: ReadWriteOnce
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: vault
