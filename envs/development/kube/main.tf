@@ -35,7 +35,7 @@ resource "kubectl_manifest" "nodepool_ec2nodeclass" {
   for_each = fileset("${path.module}", "*.yaml")
   yaml_body = file("${path.module}/${each.value}")
 
-  depends_on = [ module.eks_cluster, module.eks_cluster ]
+  depends_on = [ module.eks_cluster, module.karpenter.helm_release.karpenter ]
 }
 
 module "aws_lbc" {

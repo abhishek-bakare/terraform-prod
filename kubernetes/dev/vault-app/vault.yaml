@@ -38,14 +38,27 @@ spec:
                 }
               storage "raft" {
                 path = "/vault/data"
+                # Crucial Fix: Allows the pods to locate each other and form the cluster
+                retry_join {
+                  leader_api_addr = "http://vault-0.vault-internal:8200"
                 }
+                retry_join {
+                  leader_api_addr = "http://vault-1.vault-internal:8200"
+                }
+                retry_join {
+                  leader_api_addr = "http://vault-2.vault-internal:8200"
+                }
+                }
+              # Crucial Fix: Required for Kubernetes Raft cluster sync
+              service_registration "kubernetes" {}
+              
               seal "awskms" {
                 region = "us-east-1"
-                kms-key-id = "44deb90a-148c-4099-84cd-4f89d53f2223"
+                kms-key-id = "19a49df7-781a-4ecc-9e9f-095922261abd"
                 }
           nodeSelector:
             karpenter.sh/capacity-type: "on-demand"
-            node.kubernetes.io/instance-type: "t3.small"
+            
 
           dataStorage:
             enabled: true

@@ -79,3 +79,8 @@ resource "helm_release" "lbc" {
     depends_on = [ aws_eks_pod_identity_association.lbc ]
 }
 
+resource "time_sleep" "wait_for_alb_webhook" {
+  depends_on = [helm_release.lbc]
+  create_duration = "45s"
+}
+
