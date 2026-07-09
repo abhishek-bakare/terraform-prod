@@ -9,13 +9,6 @@ resource "helm_release" "argocd" {
 
     values = [
         yamlencode({
-            # argocd will deployed on Karp nodes
-            global = {
-                nodeSelector = {
-                    "karpenter.sh/nodepool" = "nodepool-aws-karp"
-                    "karpenter.sh/capacity-type" = "on-demand"
-                }
-            }
 
             # tells argocd to disable native TLS termination and serve via HTTP instead of HTTPS
             server = {

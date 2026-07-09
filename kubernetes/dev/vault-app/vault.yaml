@@ -12,6 +12,7 @@ spec:
     helm:
       values: |
         server:
+          enabled: true
           # Ingress for vault UI 
           ingress:         
             enabled: true
@@ -54,7 +55,7 @@ spec:
               
               seal "awskms" {
                 region = "us-east-1"
-                kms-key-id = "19a49df7-781a-4ecc-9e9f-095922261abd"
+                kms-key-id = "cb8461d2-3523-4d99-85e7-476c4a123d19"
                 }
           nodeSelector:
             karpenter.sh/capacity-type: "on-demand"
@@ -64,7 +65,7 @@ spec:
             enabled: true
             size: 10Gi
             storageClass: gp3-dev-sc
-            accessMode: ReadWriteOnce
+            accessMode: ReadWriteOnce 
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: vault
