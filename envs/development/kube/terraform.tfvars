@@ -4,9 +4,9 @@ cluster_version = "1.35"
 node_groups = {
     # node group 1
   "node-1" = {
-    instance_types = ["t3.small"]
-    desired_size   = 2
+    instance_types = ["t3.small", "c7i-flex.large"]
+    desired_size   = 3
     min_size       = 1
-    max_size       = 2
+    max_size       = 4
   }
 }

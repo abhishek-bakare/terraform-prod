@@ -28,7 +28,7 @@ spec:
     - tags:
         karpenter.sh/discovery: "dev-cluster"
         
-  # Tag all new EC2 instances so you know Karpenter built them
+  # Tag all new EC2 i nstances so you know Karpenter built them
   tags:
     Name: karpenter-provisioned-node
     Environment: dev

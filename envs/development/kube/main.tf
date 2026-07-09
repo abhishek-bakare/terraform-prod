@@ -31,13 +31,6 @@ module "karpenter" {
     depends_on = [ module.eks_cluster ]
 }
 
-resource "kubectl_manifest" "nodepool_ec2nodeclass" {
-  for_each = fileset("${path.module}", "*.yaml")
-  yaml_body = file("${path.module}/${each.value}")
-
-  depends_on = [ module.eks_cluster, module.karpenter.helm_release.karpenter ]
-}
-
 module "aws_lbc" {
     source = "../../../modules/aws_lbc"
     environment = data.terraform_remote_state.networking.outputs.environment
@@ -47,21 +40,12 @@ module "aws_lbc" {
     depends_on = [ module.eks_cluster ]
 }
 
-module "nginx_ingress" {
-    source = "../../../modules/nginx"
-    cluster_name = module.eks_cluster.cluster_name
-    public_subnet_ids = [data.terraform_remote_state.networking.outputs.pub_subnet_1, 
-                        data.terraform_remote_state.networking.outputs.pub_subnet_2]
-
-    depends_on = [ module.aws_lbc, module.karpenter ]
-}
-
 module "argocd" {
     source = "../../../modules/argocd"
     cluster_name = module.eks_cluster.cluster_name
     environment = data.terraform_remote_state.networking.outputs.environment
 
-    depends_on = [ module.eks_cluster, module.nginx_ingress, module.karpenter ]
+    depends_on = [ module.eks_cluster, module.karpenter ]
 }
 
 module "vault_aws" {

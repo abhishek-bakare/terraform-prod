@@ -273,3 +273,8 @@ resource "aws_eks_addon" "addons" {
   depends_on = [ aws_eks_node_group.this_nodes ]
 
 }
+
+resource "time_sleep" "wait_for_alb_webhook" {
+  depends_on = [aws_eks_addon.addons]
+  create_duration = "45s"
+}
