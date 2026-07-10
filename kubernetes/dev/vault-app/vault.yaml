@@ -13,6 +13,10 @@ spec:
       values: |
         server:
           enabled: true
+          # this should match with TF SA we created in TF vault module eks identity
+          serviceAccount:
+            create: true
+            name: "vault"
           # Ingress for vault UI 
           ingress:         
             enabled: true
