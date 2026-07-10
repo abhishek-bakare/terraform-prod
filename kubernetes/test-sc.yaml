@@ -1,0 +1,24 @@
+# 1. A test StorageClass that provisions INSTANTLY
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: gp3-immediate-test
+provisioner: ebs.csi.aws.com
+volumeBindingMode: Immediate # <--- THE MAGIC SETTING
+parameters:
+  type: gp3
+---
+
+# 2. A test PVC asking for a 1GB drive right now
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ebs-test-pvc
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: gp3-immediate-test
+  resources:
+    requests:
+      storage: 1Gi
