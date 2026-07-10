@@ -55,7 +55,7 @@ spec:
               
               seal "awskms" {
                 region = "us-east-1"
-                kms-key-id = "cb8461d2-3523-4d99-85e7-476c4a123d19"
+                kms-key-id = "901c941c-5807-446d-a7c4-e1441e0c4733"
                 }
           nodeSelector:
             karpenter.sh/capacity-type: "on-demand"
