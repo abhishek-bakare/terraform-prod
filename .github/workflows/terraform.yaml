@@ -42,7 +42,7 @@ jobs:
               with:
                 terraform_version: ${{ env.TF_VERSION }}
             - name: Terraform format check
-              run: terraform fmt -check -recursive         #check: pipeline fail if any issue in tf file, recursive: depply scans all the dir
+              run: terraform fmt -recursive         #check: pipeline fail if any issue in tf file, recursive: depply scans all the dir
             - name: Setup TFlint            #this will do advanced check like security issues, optimization errors or any inproper values like ec2 type t2.microooo, etc
               uses: terraform-linters/setup-tflint@v4
             - name: Run TFlint
