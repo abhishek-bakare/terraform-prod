@@ -67,7 +67,7 @@ spec:
 
           dataStorage:
             enabled: true
-            size: 10Gi
+            size: 3Gi
             storageClass: gp3-dev-sc
             accessMode: ReadWriteOnce 
   destination:
