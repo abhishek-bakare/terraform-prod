@@ -4,13 +4,13 @@ on:
         branches: ["staging","main"]
         types: [opened, synchronize, ready_for_review, reopened]
         paths: 
-          - 'envs/development/'
-          - 'modules/'
+          - 'envs/development/**'
+          - 'modules/**'
     push:
         branches: ["main","staging"]
         paths:
-          - 'envs/development/'
-          - 'modules/'
+          - 'envs/development/**'
+          - 'modules/**'
 permissions:            #per for OIDC token generation and PR comments
     id-token: write
     contents: read
