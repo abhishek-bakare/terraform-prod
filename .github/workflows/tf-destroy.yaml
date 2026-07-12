@@ -38,13 +38,24 @@ jobs:
             - name: Setting up AWS creds
               uses: aws-actions/configure-aws-credentials@v4
               with:
-                role-to-assume: arn:aws:iam::156985228858:role/terraform-plan-role
+                role-to-assume: arn:aws:iam::059325865650:role/terraform-apply-role
                 aws-region: ${{ env.AWS_REGION }}
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
               with:
                 terraform_version: ${{ env.TF_VERSION }}
-            - name: Terraform init
-              run: terraform init
-            - name: Terraform destroy
-              run: terraform destroy -auto-approve
+            - name: Terraform init and destroy for kube
+              working-directory: envs/development/kube
+              run: |
+                terraform init
+                terraform destroy -auto-approve
+            - name: Terraform init and destroy for iam
+              working-directory: envs/development/iam
+              run: |
+                terraform init
+                terraform destroy -auto-approve
+            - name: Terraform init and destroy for net
+              working-directory: envs/development/networking
+              run: |
+                terraform init
+                terraform destroy -auto-approve
