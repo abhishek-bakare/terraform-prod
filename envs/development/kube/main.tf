@@ -37,7 +37,7 @@ module "aws_lbc" {
     vpcid = data.terraform_remote_state.networking.outputs.vpc_id
     cluster_name = module.eks_cluster.cluster_name
 
-    depends_on = [ module.eks_cluster ]
+    depends_on = [ module.eks_cluster, module.karpenter ]
 }
 
 module "argocd" {
@@ -45,7 +45,7 @@ module "argocd" {
     cluster_name = module.eks_cluster.cluster_name
     environment = data.terraform_remote_state.networking.outputs.environment
 
-    depends_on = [ module.eks_cluster, module.karpenter ]
+    depends_on = [ module.eks_cluster, module.karpenter, module.aws_lbc ]
 }
 
 module "vault_aws" {
