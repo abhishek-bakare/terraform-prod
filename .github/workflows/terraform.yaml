@@ -88,12 +88,12 @@ jobs:
                 terraform init
                 terraform validate
                 terraform plan -no-color -out=tfplan > ../../../plan-net.txt
-            #- name: TF init and plan for iam
-            #  working-directory: envs/development/iam
-            #  run: |
-            #    terraform init
-            #    terraform validate
-            #    terraform plan -no-color -out=tfplan > ../../../plan-iam.txt
+            - name: TF init and plan for iam
+              working-directory: envs/development/iam
+              run: |
+                terraform init
+                terraform validate
+                terraform plan -no-color -out=tfplan > ../../../plan-iam.txt
             #- name: TF init and plan for kube
             #  working-directory: envs/development/kube
             #  run: | 
@@ -108,7 +108,7 @@ jobs:
                 script: |
                     const fs = require('fs');       //import node.js filesystem
                     const netPlan = fs.readFileSync('plan-net.txt','utf8')
-                    //const iamPlan = fs.readFileSync('plan-iam.txt','utf8');
+                    const iamPlan = fs.readFileSync('plan-iam.txt','utf8');
                     //const kubePlan = fs.readFileSync('plan-kube.txt','utf8');
                     const output = `#### Terraform plan
                     <details><summary>Layer 1: Networking Show plan</summary>
@@ -117,7 +117,12 @@ jobs:
                     ${netPlan}
                     \`\`\`
                     </details>
-                    
+                    <details><summary>Layer 2: IAM Show plan</summary>
+
+                    \`\`\`terraform\n
+                    ${iamPlan}
+                    \`\`\`
+                    </details>
 
                     *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
 
@@ -151,11 +156,11 @@ jobs:
               run: |
                 terraform init
                 terraform apply -auto-approve
-            #- name: Terraform init and apply for iam
-            #  working-directory: envs/development/iam
-            #  run: |
-            #    terraform init
-            #    terraform apply -auto-approve
+            - name: Terraform init and apply for iam
+              working-directory: envs/development/iam
+              run: |
+                terraform init
+                terraform apply -auto-approve
             #- name: Terraform init and apply for kube
             #  working-directory: envs/development/kube
             #  run: |
