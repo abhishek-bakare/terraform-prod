@@ -94,12 +94,12 @@ jobs:
                 terraform init
                 terraform validate
                 terraform plan -no-color -out=tfplan > ../../../plan-iam.txt
-            #- name: TF init and plan for kube
-            #  working-directory: envs/development/kube
-            #  run: | 
-            #    terraform init
-            #    terraform validate
-            #    terraform plan -no-color -out=tfplan > ../../../plan-kube.txt
+            - name: TF init and plan for kube
+              working-directory: envs/development/kube
+              run: | 
+                terraform init
+                terraform validate
+                terraform plan -no-color -out=tfplan > ../../../plan-kube.txt
             - name: Update PR with plan
               uses: actions/github-script@v7
               if: github.event_name == 'pull_request'
@@ -109,7 +109,7 @@ jobs:
                     const fs = require('fs');       //import node.js filesystem
                     const netPlan = fs.readFileSync('plan-net.txt','utf8')
                     const iamPlan = fs.readFileSync('plan-iam.txt','utf8');
-                    //const kubePlan = fs.readFileSync('plan-kube.txt','utf8');
+                    const kubePlan = fs.readFileSync('plan-kube.txt','utf8');
                     const output = `#### Terraform plan
                     <details><summary>Layer 1: Networking Show plan</summary>
 
@@ -121,6 +121,12 @@ jobs:
 
                     \`\`\`terraform\n
                     ${iamPlan}
+                    \`\`\`
+                    </details>
+                    <details><summary>Layer 3: EKS Show plan</summary>
+
+                    \`\`\`terraform\n
+                    ${kubePlan}
                     \`\`\`
                     </details>
 
@@ -161,9 +167,9 @@ jobs:
               run: |
                 terraform init
                 terraform apply -auto-approve
-            #- name: Terraform init and apply for kube
-            #  working-directory: envs/development/kube
-            #  run: |
-            #    terraform init
-            #    terraform apply -auto-approve
+            - name: Terraform init and apply for kube
+              working-directory: envs/development/kube
+              run: |
+                terraform init
+                terraform apply -auto-approve
 
