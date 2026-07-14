@@ -18,6 +18,11 @@ spec:
         jvmOpts: "-Xmx1G -Xms1G"
         elasticsearch: 
           jvmOpts: "-Xmx1G -Xms1G"
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "monitoring"
+            effect: "NoSchedule
         postgresql:
           enabled: true
           primary:
@@ -27,11 +32,8 @@ spec:
                 cpu: 250m       
         resources:  
           requests:
-            memory: 3Gi
-            cpu: "1"
-          limits: 
-            memory: 4Gi
-            cpu: "2"
+            memory: 1.5Gi
+            cpu: "500m"
         ingress: 
           enabled: true
           ingressClassName: nginx
@@ -40,6 +42,11 @@ spec:
             nginx.ingress.kubernetes.io/proxy-body-size: "64m"
           hosts:
             - name: sonarqube.mycompany.test
+        dataStorage:
+          enabled: true
+          size: 5Gi
+          storageClass: gp3-dev-sc
+          accessMode: ReadWriteOnce 
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: sonarqube
