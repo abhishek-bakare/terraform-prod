@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sonarqube
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://SonarSource.github.io/helm-chart-sonarqube'
+    targetRevision: '10.5.1'
+    chart: sonarqube
+    helm:
+      values: |
+        nodeSelector:
+          node.kubernetes.io/instance-type: c7i-flex.large
+
+        # Restrict Java memory so it doesn't crash a 4GB node
+        jvmOpts: "-Xmx1G -Xms1G"
+        # elasticsearch also needs to be restricted
+        elasticsearch: 
+          jvmOpts: "-Xmx1G -Xms1G"
+        
+        # use postgresql
+        postgresql:
+          enabled: true
+          primary:
+            resources:
+              requests:
+                memory: 256Mi   # 256MB of RAM
+                cpu: 250m       # 1vCPU/core = 1000m (250m = 0.25 of single core, 25%)
+        resources:  
+          requests:
+            memory: 2Gi
+            cpu: 1
+        
+        ingress: 
+          enabled: true
+          ingressClassName: nginx
+            annotations:
+              nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+            hosts:
+              - host: sonarqube.mycompany.test
+                paths:
+                  - /
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: sonarqube
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

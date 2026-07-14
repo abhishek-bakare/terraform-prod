@@ -1,0 +1,118 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://prometheus-community.github.io/helm-charts'
+    targetRevision: '87.15.1'
+    chart: kube-prometheus-stack
+    helm: 
+      values: |
+        # prometheus server
+        prometheus:
+          prometheusSpec: 
+            nodeSelector: 
+              node.kubernetes.io/instance-type: c7i-flex.large
+            # bypass the monitoring bouncer taint
+            tolerations:
+              - key: dedicated
+                operator: equal
+                value: monitoring
+                effect: NoSchedule
+            resources:
+              requests:
+                memory: 1Gi
+                cpu: 500m
+            ingress
+              enabled: true
+              ingressClassName: nginx
+              annotations:
+                nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+              hosts:
+                - host: prometheus.mycompany.test
+                  paths:
+                    - /
+        # Grafana 
+        grafana:
+          nodeSelector:
+            workload-type: monitoring
+          tolerations:
+            - key: dedicated
+              operator: equal
+              value: monitoring
+              effect: NoSchedule
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            annotations: 
+              nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+            hosts:  
+              - host: grafana.mycompany.test
+                paths:
+                  - /
+
+        # 3. ALERTMANAGER (Light Compute)
+        alertmanager:
+          alertmanagerSpec:
+            nodeSelector:
+              workload-type: monitoring
+            tolerations:
+              - key: dedicated
+                operator: Equal
+                value: monitoring
+                effect: NoSchedule
+            ingress:
+              enabled: true
+              ingressClassName: nginx
+              annotations: 
+                nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+              hosts:  
+                - host: alerts.mycompany.test
+                  paths:
+                  - /
+
+        # 4. PROMETHEUS OPERATOR (Light Compute)
+        prometheusOperator:
+          nodeSelector:
+            workload-type: monitoring
+          tolerations:
+            - key: dedicated
+              operator: Equal
+              value: monitoring
+              effect: NoSchedule
+
+        # 5. KUBE-STATE-METRICS (Light Compute)
+        kube-state-metrics:
+          nodeSelector:
+            workload-type: monitoring
+          tolerations:
+            - key: dedicated
+              operator: Equal
+              value: monitoring
+              effect: NoSchedule
+              
+        # 6. NODE EXPORTER (Runs everywhere)
+        prometheus-node-exporter:
+          # NO nodeSelector here, so it runs on all web nodes too!
+          tolerations:
+            - key: dedicated
+              operator: Equal
+              value: monitoring
+              effect: NoSchedule
+
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: monitoring
+  syncPolicy:
+    automated:  
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

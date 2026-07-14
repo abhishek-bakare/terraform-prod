@@ -1,0 +1,34 @@
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: monit-nodepool
+spec:
+  template:
+    metadata:
+      labels:
+        workload-type: monitoring
+    spec:
+      # adding this so only K8 cant schedule other app onto this, only tolarate pods are allowed here
+      taints:
+        - key: dedicated
+          value: monitoring
+          effect: NoSchedule
+      requirements:
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64"] # Standard Intel/AMD processors
+          
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values: ["t3.small","c7i-flex.large"]
+          
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["on-demand"] # Tell Karpenter to use cheap Spot instances first!
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: ec2nodeclass-aws-karp
+  disruption:   # Kill nodes instantly if they are empty for 1 minute
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    consolidateAfter: 5m
