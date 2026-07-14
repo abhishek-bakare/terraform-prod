@@ -51,9 +51,7 @@ spec:
             annotations: 
               nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
             hosts:  
-              - host: grafana.mycompany.test
-                paths:
-                  - /
+              - grafana.mycompany.test
         alertmanager:
           alertmanagerSpec:
             nodeSelector:
