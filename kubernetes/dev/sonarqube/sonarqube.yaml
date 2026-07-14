@@ -33,12 +33,12 @@ spec:
         ingress: 
           enabled: true
           ingressClassName: nginx
-            annotations:
-              nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-            hosts:
-              - host: sonarqube.mycompany.test
-                paths:
-                  - /
+          annotations:
+            nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+          hosts:
+            - host: sonarqube.mycompany.test
+              paths:
+                - /
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: sonarqube
