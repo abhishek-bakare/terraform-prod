@@ -23,9 +23,21 @@ spec:
             operator: "Equal"
             value: "monitoring"
             effect: "NoSchedule
+        persistence:
+          enabled: true
+          # A standard gp3 default storage class will be used
+          size: 5Gi
+          storageClass: gp3-dev-sc
+          accessMode: ReadWriteOnce
         postgresql:
           enabled: true
           primary:
+            persistence:
+              enabled: true
+              # A standard gp3 default storage class will be used
+              size: 8Gi
+              storageClass: gp3-dev-sc
+          accessMode: ReadWriteOnce
             resources:
               requests:
                 memory: 256Mi   
@@ -42,11 +54,7 @@ spec:
             nginx.ingress.kubernetes.io/proxy-body-size: "64m"
           hosts:
             - name: sonarqube.mycompany.test
-        dataStorage:
-          enabled: true
-          size: 5Gi
-          storageClass: gp3-dev-sc
-          accessMode: ReadWriteOnce 
+        
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: sonarqube
