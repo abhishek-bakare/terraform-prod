@@ -57,7 +57,6 @@ spec:
               - host: grafana.mycompany.test
                 paths:
                   - /
-
         # 3. ALERTMANAGER (Light Compute)
         alertmanager:
           alertmanagerSpec:
@@ -77,7 +76,6 @@ spec:
                 - host: alerts.mycompany.test
                   paths:
                   - /
-
         # 4. PROMETHEUS OPERATOR (Light Compute)
         prometheusOperator:
           nodeSelector:
@@ -87,7 +85,6 @@ spec:
               operator: Equal
               value: monitoring
               effect: NoSchedule
-
         # 5. KUBE-STATE-METRICS (Light Compute)
         kube-state-metrics:
           nodeSelector:
@@ -96,8 +93,7 @@ spec:
             - key: dedicated
               operator: Equal
               value: monitoring
-              effect: NoSchedule
-              
+              effect: NoSchedule        
         # 6. NODE EXPORTER (Runs everywhere)
         prometheus-node-exporter:
           # NO nodeSelector here, so it runs on all web nodes too!
@@ -106,7 +102,6 @@ spec:
               operator: Equal
               value: monitoring
               effect: NoSchedule
-
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: monitoring
