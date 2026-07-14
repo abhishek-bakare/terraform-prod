@@ -22,7 +22,7 @@ spec:
           - key: "dedicated"
             operator: "Equal"
             value: "monitoring"
-            effect: "NoSchedule
+            effect: "NoSchedule"
         persistence:
           enabled: true
           # A standard gp3 default storage class will be used
