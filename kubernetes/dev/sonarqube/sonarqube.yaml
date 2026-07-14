@@ -13,13 +13,11 @@ spec:
       values: |
         nodeSelector:
           node.kubernetes.io/instance-type: c7i-flex.large
-
         # Restrict Java memory so it doesn't crash a 4GB node
         jvmOpts: "-Xmx1G -Xms1G"
         # elasticsearch also needs to be restricted
         elasticsearch: 
           jvmOpts: "-Xmx1G -Xms1G"
-        
         # use postgresql
         postgresql:
           enabled: true
@@ -32,7 +30,6 @@ spec:
           requests:
             memory: 2Gi
             cpu: 1
-        
         ingress: 
           enabled: true
           ingressClassName: nginx
