@@ -11,12 +11,10 @@ spec:
     chart: kube-prometheus-stack
     helm: 
       values: |
-        # prometheus server
         prometheus:
           prometheusSpec: 
             nodeSelector: 
               node.kubernetes.io/instance-type: c7i-flex.large
-            # bypass the monitoring bouncer taint
             tolerations:
               - key: dedicated
                 operator: Equal
@@ -35,7 +33,6 @@ spec:
                 - host: prometheus.mycompany.test
                   paths:
                     - /
-        # Grafana 
         grafana:
           nodeSelector:
             workload-type: monitoring
@@ -57,7 +54,6 @@ spec:
               - host: grafana.mycompany.test
                 paths:
                   - /
-        # 3. ALERTMANAGER (Light Compute)
         alertmanager:
           alertmanagerSpec:
             nodeSelector:
@@ -76,7 +72,6 @@ spec:
                 - host: alerts.mycompany.test
                   paths:
                     - /
-        # 4. PROMETHEUS OPERATOR (Light Compute)
         prometheusOperator:
           nodeSelector:
             workload-type: monitoring
@@ -85,7 +80,6 @@ spec:
               operator: Equal
               value: monitoring
               effect: NoSchedule
-        # 5. KUBE-STATE-METRICS (Light Compute)
         kube-state-metrics:
           nodeSelector:
             workload-type: monitoring
@@ -94,9 +88,7 @@ spec:
               operator: Equal
               value: monitoring
               effect: NoSchedule        
-        # 6. NODE EXPORTER (Runs everywhere)
         prometheus-node-exporter:
-          # NO nodeSelector here, so it runs on all web nodes too!
           tolerations:
             - key: dedicated
               operator: Equal

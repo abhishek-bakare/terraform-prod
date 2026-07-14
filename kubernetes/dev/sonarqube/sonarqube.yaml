@@ -10,22 +10,21 @@ spec:
     targetRevision: '10.5.1'
     chart: sonarqube
     helm:
+      #FYI memory= 256Mi   # 256MB of RAM
+      #FYI cpu= 250m       # 1vCPU/core = 1000m (250m = 0.25 of single core, 25%)
       values: |
         nodeSelector:
           node.kubernetes.io/instance-type: c7i-flex.large
-        # Restrict Java memory so it doesn't crash a 4GB node
         jvmOpts: "-Xmx1G -Xms1G"
-        # elasticsearch also needs to be restricted
         elasticsearch: 
           jvmOpts: "-Xmx1G -Xms1G"
-        # use postgresql
         postgresql:
           enabled: true
           primary:
             resources:
               requests:
-                memory: 256Mi   # 256MB of RAM
-                cpu: 250m       # 1vCPU/core = 1000m (250m = 0.25 of single core, 25%)
+                memory: 256Mi   
+                cpu: 250m       
         resources:  
           requests:
             memory: 2Gi
