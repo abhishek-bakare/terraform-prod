@@ -19,14 +19,14 @@ spec:
             # bypass the monitoring bouncer taint
             tolerations:
               - key: dedicated
-                operator: equal
+                operator: Equal
                 value: monitoring
                 effect: NoSchedule
             resources:
               requests:
                 memory: 1Gi
                 cpu: 500m
-            ingress
+            ingress:
               enabled: true
               ingressClassName: nginx
               annotations:
@@ -41,7 +41,7 @@ spec:
             workload-type: monitoring
           tolerations:
             - key: dedicated
-              operator: equal
+              operator: Equal
               value: monitoring
               effect: NoSchedule
           resources:
@@ -75,7 +75,7 @@ spec:
               hosts:  
                 - host: alerts.mycompany.test
                   paths:
-                  - /
+                    - /
         # 4. PROMETHEUS OPERATOR (Light Compute)
         prometheusOperator:
           nodeSelector:
