@@ -38,28 +38,24 @@ spec:
           accessMode: ReadWriteOnce
         postgresql:
           enabled: true
-          primary:
-            # Force the database pod onto your monitoring node
-            tolerations:
-              - key: "dedicated"
-                operator: "Equal"
-                value: "monitoring"
-                effect: "NoSchedule"
-            
-            # Database storage
-            persistence:
-              enabled: true
-              size: 20Gi
-              storageClass: "gp3-dev-sc"
-              accessModes: 
-                - ReadWriteOnce
-            resources:
-              requests:
-                memory: 128Mi   
-                cpu: 100m
-              limits:
-                memory: 256Mi
-                cpu: 200m                   
+          tolerations:
+            - key: "dedicated"
+              operator: "Equal"
+              value: "monitoring"
+              effect: "NoSchedule"
+          persistence:
+            enabled: true
+            size: 20Gi
+            storageClass: "gp3-dev-sc"
+            accessModes: 
+              - ReadWriteOnce 
+          resources:
+            requests:
+              memory: 128Mi   
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 200m                 
         resources:  
           requests:
             memory: 1.5Gi
