@@ -38,31 +38,28 @@ spec:
           accessMode: ReadWriteOnce
         postgresql:
           enabled: true
-          tolerations:
+          primary:
+            # Force the database pod onto your monitoring node
+            tolerations:
               - key: "dedicated"
                 operator: "Equal"
                 value: "monitoring"
                 effect: "NoSchedule"
-          persistence:
-            enabled: true
-            # A standard gp3 default storage class will be used
-            size: 20Gi
-            storageClass: gp3-dev-sc
-            storageClassName: gp3-dev-sc
-            accessMode: ReadWriteOnce
-          postgresqlPersistence:
-            enabled: true
-            size: 20Gi
-            storageClass: gp3-dev-sc
-            storageClassName: gp3-dev-sc
-            accessMode: ReadWriteOnce
-          resources:
-            requests:
-              memory: 128Mi   
-              cpu: 100m
-            limits:
-              memory: 256Mi
-              cpu: 200m                   
+            
+            # Database storage
+            persistence:
+              enabled: true
+              size: 20Gi
+              storageClass: "gp3-dev-sc"
+              accessModes: 
+                - ReadWriteOnce
+            resources:
+              requests:
+                memory: 128Mi   
+                cpu: 100m
+              limits:
+                memory: 256Mi
+                cpu: 200m                   
         resources:  
           requests:
             memory: 1.5Gi
