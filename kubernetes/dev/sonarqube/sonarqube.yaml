@@ -3,95 +3,102 @@ kind: Application
 metadata:
   name: sonarqube
   namespace: argocd
+
 spec:
   project: default
+
   source:
-    repoURL: 'https://SonarSource.github.io/helm-chart-sonarqube'
-    targetRevision: '2026.3.1'
+    repoURL: https://SonarSource.github.io/helm-chart-sonarqube
     chart: sonarqube
+    targetRevision: "2026.3.1"
+
     helm:
-      #FYI memory= 256Mi   # 256MB of RAM
-      #FYI cpu= 250m       # 1vCPU/core = 1000m (250m = 0.25 of single core, 25%)
       values: |
-        monitoringPasscodeSecretName: sonarqube-monitoring-passcode
-        monitoringPasscodeSecretKey: SONAR_WEB_SYSTEMPASSCODE
+
+        community:
+          enabled: true
+
+        monitoringPasscode: "SonarMonitoring@123"
+
+        replicaCount: 1
+
         nodeSelector:
-          node.kubernetes.io/instance-type: c7i-flex.large
           workload-type: monitoring
-        jvmOpts: "-Xmx768m -Xms768m"
-        elasticsearch: 
-          jvmOpts: "-Xmx768m -Xms768m"
+
         tolerations:
-          - key: "dedicated"
-            operator: "Equal"
-            value: "monitoring"
-            effect: "NoSchedule"
-        initContainers:
-          tolerations:
-            - key: "dedicated"
-              operator: "Equal"
-              value: "monitoring"
-              effect: "NoSchedule"
+          - key: dedicated
+            operator: Equal
+            value: monitoring
+            effect: NoSchedule
+
         persistence:
           enabled: true
-          # A standard gp3 default storage class will be used
-          size: 5Gi
           storageClass: gp3-dev-sc
-          accessMode: ReadWriteOnce
-        postgresql:
-          enabled: true
-          image:
-            registry: docker.io
-            repository: bitnami/postgresql
-            tag: 15.10.0-debian-12-r0
-          postgresqlUsername: sonarUser
-          postgresqlPassword: sonarPass
-          postgresqlDatabase: sonarDB
+          size: 10Gi
 
-          persistence:
-            enabled: true
-            accessMode: ReadWriteOnce
-            size: 20Gi
-            storageClass: gp3-dev-sc
-
-          resources:
-            requests:
-              memory: 128Mi
-              cpu: 100m
-            limits:
-              memory: 256Mi
-              cpu: 200m
-
-          nodeSelector:
-            workload-type: monitoring
-
-          tolerations:
-            - key: dedicated
-              operator: Equal
-              value: monitoring
-              effect: NoSchedule                 
-        resources:  
+        resources:
           requests:
-            memory: 1.5Gi
-            cpu: "500m"
+            cpu: 500m
+            memory: 2Gi
           limits:
-            memory: 2800Mi
             cpu: "1"
-        ingress: 
+            memory: 3Gi
+
+        jvmOpts: "-Xms512m -Xmx1024m"
+
+        ingress:
           enabled: true
           ingressClassName: nginx
+
           annotations:
-            nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+            nginx.ingress.kubernetes.io/backend-protocol: HTTP
             nginx.ingress.kubernetes.io/proxy-body-size: "64m"
+
           hosts:
             - name: sonarqube.mycompany.test
-        
+              path: /
+              pathType: Prefix
+
+        postgresql:
+          enabled: true
+
+          auth:
+            username: sonar
+            password: sonar123
+            database: sonarqube
+
+          primary:
+
+            nodeSelector:
+              workload-type: monitoring
+
+            tolerations:
+              - key: dedicated
+                operator: Equal
+                value: monitoring
+                effect: NoSchedule
+
+            persistence:
+              enabled: true
+              storageClass: gp3-dev-sc
+              size: 20Gi
+
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: 300m
+                memory: 512Mi
+
   destination:
-    server: 'https://kubernetes.default.svc'
+    server: https://kubernetes.default.svc
     namespace: sonarqube
+
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+
     syncOptions:
       - CreateNamespace=true
