@@ -75,3 +75,7 @@ If you do not want to use AmazonLinux as a initial nodes then we need to configu
 9. Lets create vault now, for Vault we are creating AWS KMS key which can do auto-unseal work so no human intevention required. Then using argocd yaml maifest we are going to deploy Hashicorp Vault.
 I also created the StorageClass so Vault can get the persistent storage
 
+
+# helm show values sonarqube --repo https://SonarSource.github.io/helm-chart-sonarqube --version 10.5.1
+To see values use above cmd
+

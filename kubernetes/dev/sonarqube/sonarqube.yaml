@@ -38,6 +38,10 @@ spec:
           accessMode: ReadWriteOnce
         postgresql:
           enabled: true
+          image:
+          registry: docker.io
+          repository: bitnami/postgresql
+          tag: 15.10.0-debian-12-r0
           postgresqlUsername: sonarUser
           postgresqlPassword: sonarPass
           postgresqlDatabase: sonarDB
