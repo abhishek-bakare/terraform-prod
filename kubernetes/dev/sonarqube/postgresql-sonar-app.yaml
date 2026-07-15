@@ -11,6 +11,10 @@ spec:
     chart: postgresql
     helm:
       values: |
+        image:
+          registry: public.ecr.aws
+          repository: bitnami/postgresql
+          tag: "16.3.0" 
         auth:
           postgresPassword: "sonar-db-password" # Change this in production
           username: "sonarUser"
