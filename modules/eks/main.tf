@@ -279,20 +279,3 @@ resource "time_sleep" "wait_for_alb_webhook" {
   create_duration = "30s"
 }
 
-# Grant your personal AWS user Admin Access to the cluster
-resource "aws_eks_access_entry" "local_admin" {
-  cluster_name  = aws_eks_cluster.this_cluster.name
-  # Change this to match your actual local IAM user or SSO role!
-  principal_arn = "arn:aws:iam::059325865650:user/admin-abhishek" 
-  type          = "STANDARD"
-}
-
-resource "aws_eks_access_policy_association" "local_admin_policy" {
-  cluster_name  = aws_eks_cluster.this_cluster.name
-  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-  principal_arn = aws_eks_access_entry.local_admin.principal_arn
-
-  access_scope {
-    type = "cluster"
-  }
-}
