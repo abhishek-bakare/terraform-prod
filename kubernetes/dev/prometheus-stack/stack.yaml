@@ -12,9 +12,17 @@ spec:
     helm: 
       values: |
         prometheus:
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            annotations:
+              nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+            hosts:
+              - host: prometheus.mycompany.test
+                paths:
+                  - /
           prometheusSpec: 
             nodeSelector: 
-              node.kubernetes.io/instance-type: c7i-flex.large
               workload-type: monitoring
             tolerations:
               - key: "dedicated"
@@ -23,20 +31,20 @@ spec:
                 effect: "NoSchedule"
             resources:
               requests:
-                memory: 500Mi
-                cpu: 200m
+                memory: 512Mi
+                cpu: 100m
               limits: 
                 memory: 750Mi
                 cpu: 500m
-            ingress:
-              enabled: true
-              ingressClassName: nginx
-              annotations:
-                nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-              hosts:
-                - host: prometheus.mycompany.test
-                  paths:
-                    - /
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  storageClassName: gp3-dev-sc
+                  accessModes:
+                    - ReadWriteOnce
+                  resources:
+                    requests:
+                      storage: 10Gi
         grafana:
           nodeSelector:
             workload-type: monitoring
@@ -45,10 +53,17 @@ spec:
               operator: "Equal"
               value: "monitoring"
               effect: "NoSchedule"
+          persistence:
+            enabled: true
+            storageClassName: gp3-dev-sc
+            size: 10Gi
           resources:
             requests:
               memory: 256Mi
               cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 300m
           ingress:
             enabled: true
             ingressClassName: nginx
@@ -57,6 +72,13 @@ spec:
             hosts:  
               - grafana.mycompany.test
         alertmanager:
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            annotations: 
+              nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+            hosts:  
+              - alerts.mycompany.test
           alertmanagerSpec:
             nodeSelector:
               workload-type: monitoring
@@ -65,15 +87,14 @@ spec:
                 operator: "Equal"
                 value: "monitoring"
                 effect: "NoSchedule"
-            ingress:
-              enabled: true
-              ingressClassName: nginx
-              annotations: 
-                nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-              hosts:  
-                - host: alerts.mycompany.test
-                  paths:
-                    - /
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                cpu: 200m
+                memory: 256Mi
+                        
         prometheusOperator:
           nodeSelector:
             workload-type: monitoring
