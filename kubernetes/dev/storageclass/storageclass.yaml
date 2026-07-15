@@ -7,5 +7,5 @@ parameters:
   type: gp3
   encrypted: "true"
 reclaimPolicy: Retain       # if PVC is deleted, corresponding PV is released but then AWS preserve the volume. Delete will delete the volume
-volumeBindingMode: Immediate          #WaitForFirstConsumer   # instead of creating volume immediately after sc applies, K8 will create volume when any pod asks for volume
+volumeBindingMode: WaitForFirstConsumer          #WaitForFirstConsumer   # instead of creating volume immediately after sc applies, K8 will create volume when any pod asks for volume
 allowVolumeExpansion: true
