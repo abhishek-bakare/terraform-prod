@@ -46,7 +46,13 @@ spec:
             persistence:
               enabled: true
               # A standard gp3 default storage class will be used
-              size: 8Gi
+              size: 20Gi
+              storageClass: gp3-dev-sc
+              storageClassName: gp3-dev-sc
+              accessMode: ReadWriteOnce
+            postgresqlPersistence:
+              enabled: true
+              size: 20Gi
               storageClass: gp3-dev-sc
               storageClassName: gp3-dev-sc
               accessMode: ReadWriteOnce
