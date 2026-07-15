@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sonarqube-db
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://charts.bitnami.com/bitnami'
+    targetRevision: '15.5.0' # Use a stable version
+    chart: postgresql
+    helm:
+      values: |
+        auth:
+          postgresPassword: "sonar-db-password" # Change this in production
+          username: "sonarUser"
+          password: "sonarPass"
+          database: "sonarDB"
+        primary:
+          tolerations:
+            - key: "dedicated"
+              operator: "Equal"
+              value: "monitoring"
+              effect: "NoSchedule"
+          persistence:
+            enabled: true
+            size: 20Gi
+            storageClass: "gp3-dev-sc"
+            accessModes:
+              - ReadWriteOnce
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 250m
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: sonarqube
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
