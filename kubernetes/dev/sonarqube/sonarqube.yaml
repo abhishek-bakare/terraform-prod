@@ -35,7 +35,35 @@ spec:
           # A standard gp3 default storage class will be used
           size: 5Gi
           storageClass: gp3-dev-sc
-          accessMode: ReadWriteOnce          
+          accessMode: ReadWriteOnce
+        postgresql:
+          enabled: true
+          postgresqlUsername: sonarUser
+          postgresqlPassword: sonarPass
+          postgresqlDatabase: sonarDB
+
+          persistence:
+            enabled: true
+            accessMode: ReadWriteOnce
+            size: 20Gi
+            storageClass: gp3-dev-sc
+
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 200m
+
+          nodeSelector:
+            workload-type: monitoring
+
+          tolerations:
+            - key: dedicated
+              operator: Equal
+              value: monitoring
+              effect: NoSchedule                 
         resources:  
           requests:
             memory: 1.5Gi
@@ -43,12 +71,6 @@ spec:
           limits:
             memory: 2800Mi
             cpu: "1"
-        jdbcOverwrite:
-          enabled: true
-          # The service name created by the bitnami chart is usually <release-name>-postgresql
-          jdbcUrl: "jdbc:postgresql://sonarqube-db-postgresql.sonarqube.svc.cluster.local:5432/sonarDB"
-          jdbcUsername: "sonarUser"
-          jdbcPassword: "sonarPass"
         ingress: 
           enabled: true
           ingressClassName: nginx
