@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: 'https://SonarSource.github.io/helm-chart-sonarqube'
-    targetRevision: '10.5.1'
+    targetRevision: '15.5.0'
     chart: sonarqube
     helm:
       #FYI memory= 256Mi   # 256MB of RAM
@@ -16,9 +16,9 @@ spec:
         nodeSelector:
           node.kubernetes.io/instance-type: c7i-flex.large
           workload-type: monitoring
-        jvmOpts: "-Xmx1024m -Xms512m"
+        jvmOpts: "-Xmx768m -Xms768m"
         elasticsearch: 
-          jvmOpts: "-Xmx1024m -Xms512m"
+          jvmOpts: "-Xmx768m -Xms768m"
         tolerations:
           - key: "dedicated"
             operator: "Equal"
@@ -35,27 +35,7 @@ spec:
           # A standard gp3 default storage class will be used
           size: 5Gi
           storageClass: gp3-dev-sc
-          accessMode: ReadWriteOnce
-        postgresql:
-          enabled: true
-          tolerations:
-            - key: "dedicated"
-              operator: "Equal"
-              value: "monitoring"
-              effect: "NoSchedule"
-          persistence:
-            enabled: true
-            size: 20Gi
-            storageClass: "gp3-dev-sc"
-            accessModes: 
-              - ReadWriteOnce 
-          resources:
-            requests:
-              memory: 128Mi   
-              cpu: 100m
-            limits:
-              memory: 256Mi
-              cpu: 200m                 
+          accessMode: ReadWriteOnce          
         resources:  
           requests:
             memory: 1.5Gi
@@ -63,6 +43,12 @@ spec:
           limits:
             memory: 2800Mi
             cpu: "1"
+        jdbcOverwrite:
+          enabled: true
+          # The service name created by the bitnami chart is usually <release-name>-postgresql
+          jdbcUrl: "jdbc:postgresql://sonarqube-db-postgresql.sonarqube.svc.cluster.local:5432/sonarDB"
+          jdbcUsername: "sonarUser"
+          jdbcPassword: "sonarPass"
         ingress: 
           enabled: true
           ingressClassName: nginx
