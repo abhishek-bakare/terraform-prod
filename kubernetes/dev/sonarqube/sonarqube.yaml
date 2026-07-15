@@ -13,6 +13,8 @@ spec:
       #FYI memory= 256Mi   # 256MB of RAM
       #FYI cpu= 250m       # 1vCPU/core = 1000m (250m = 0.25 of single core, 25%)
       values: |
+        monitoringPasscodeSecretName: sonarqube-monitoring-passcode
+        monitoringPasscodeSecretKey: SONAR_WEB_SYSTEMPASSCODE
         nodeSelector:
           node.kubernetes.io/instance-type: c7i-flex.large
           workload-type: monitoring
