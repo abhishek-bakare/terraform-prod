@@ -38,4 +38,4 @@ spec:
   # Enterprise Standard: Kill nodes instantly if they are empty for 1 minute
   disruption:
     consolidationPolicy: WhenEmptyOrUnderutilized
-    #consolidateAfter: 1m  # not required if using WhenEmptyOrUnderutilized
+    consolidateAfter: 1m  # not required if using WhenEmptyOrUnderutilized

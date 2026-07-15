@@ -31,4 +31,4 @@ spec:
         name: ec2nodeclass-aws-karp
   disruption:   # Kill nodes instantly if they are empty for 1 minute
     consolidationPolicy: WhenEmptyOrUnderutilized
-    #consolidateAfter: 5m  # not required if using WhenEmptyOrUnderutilized
+    consolidateAfter: 5m  # not required if using WhenEmptyOrUnderutilized
