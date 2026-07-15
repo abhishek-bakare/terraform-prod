@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: 'https://SonarSource.github.io/helm-chart-sonarqube'
-    targetRevision: '10.5.1'
+    targetRevision: '2026.3.1'
     chart: sonarqube
     helm:
       #FYI memory= 256Mi   # 256MB of RAM
