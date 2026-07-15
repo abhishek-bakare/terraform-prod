@@ -43,26 +43,26 @@ spec:
                 operator: "Equal"
                 value: "monitoring"
                 effect: "NoSchedule"
-            persistence:
-              enabled: true
-              # A standard gp3 default storage class will be used
-              size: 20Gi
-              storageClass: gp3-dev-sc
-              storageClassName: gp3-dev-sc
-              accessMode: ReadWriteOnce
-            postgresqlPersistence:
-              enabled: true
-              size: 20Gi
-              storageClass: gp3-dev-sc
-              storageClassName: gp3-dev-sc
-              accessMode: ReadWriteOnce
-            resources:
-              requests:
-                memory: 128Mi   
-                cpu: 100m
-              limits:
-                memory: 256Mi
-                cpu: 200m                   
+          persistence:
+            enabled: true
+            # A standard gp3 default storage class will be used
+            size: 20Gi
+            storageClass: gp3-dev-sc
+            storageClassName: gp3-dev-sc
+            accessMode: ReadWriteOnce
+          postgresqlPersistence:
+            enabled: true
+            size: 20Gi
+            storageClass: gp3-dev-sc
+            storageClassName: gp3-dev-sc
+            accessMode: ReadWriteOnce
+          resources:
+            requests:
+              memory: 128Mi   
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 200m                   
         resources:  
           requests:
             memory: 1.5Gi
