@@ -48,7 +48,7 @@ spec:
               enabled: true
               # A standard gp3 default storage class will be used
               size: 8Gi
-              storageClass: gp3-dev-sc
+              storageClassName: gp3-dev-sc
               accessMode: ReadWriteOnce
             resources:
               requests:
