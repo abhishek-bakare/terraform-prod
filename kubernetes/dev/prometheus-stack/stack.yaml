@@ -18,9 +18,10 @@ spec:
             annotations:
               nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
             hosts:
-              - host: prometheus.mycompany.test
-                paths:
-                  - /
+              - prometheus.mycompany.test
+            paths:
+              - /
+            pathType: Prefix
           prometheusSpec: 
             nodeSelector: 
               workload-type: monitoring
@@ -79,6 +80,9 @@ spec:
               nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
             hosts:  
               - alerts.mycompany.test
+            paths: 
+              - /
+            pathType: Prefix
           alertmanagerSpec:
             nodeSelector:
               workload-type: monitoring
@@ -94,6 +98,17 @@ spec:
               limits:
                 cpu: 200m
                 memory: 256Mi
+            storage:
+              volumeClaimTemplate:
+                spec:
+                  storageClassName: gp3-dev-sc
+
+                  accessModes:
+                    - ReadWriteOnce
+
+                  resources:
+                    requests:
+                      storage: 5Gi
                         
         prometheusOperator:
           nodeSelector:
@@ -106,7 +121,10 @@ spec:
           resources:  
             requests:
               memory: 150Mi
-              cpu: 50m
+              cpu: 100m
+            limits:
+              memory: 300Mi
+              cpu: 300m
         kube-state-metrics:
           nodeSelector:
             workload-type: monitoring
