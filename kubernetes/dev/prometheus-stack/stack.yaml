@@ -15,14 +15,18 @@ spec:
           prometheusSpec: 
             nodeSelector: 
               node.kubernetes.io/instance-type: c7i-flex.large
+              workload-type: monitoring
             tolerations:
-              - key: dedicated
-                operator: Equal
-                value: monitoring
-                effect: NoSchedule
+              - key: "dedicated"
+                operator: "Equal"
+                value: "monitoring"
+                effect: "NoSchedule"
             resources:
               requests:
-                memory: 1Gi
+                memory: 500Mi
+                cpu: 200m
+              limits: 
+                memory: 750Mi
                 cpu: 500m
             ingress:
               enabled: true
@@ -37,10 +41,10 @@ spec:
           nodeSelector:
             workload-type: monitoring
           tolerations:
-            - key: dedicated
-              operator: Equal
-              value: monitoring
-              effect: NoSchedule
+            - key: "dedicated"
+              operator: "Equal"
+              value: "monitoring"
+              effect: "NoSchedule"
           resources:
             requests:
               memory: 256Mi
@@ -57,10 +61,10 @@ spec:
             nodeSelector:
               workload-type: monitoring
             tolerations:
-              - key: dedicated
-                operator: Equal
-                value: monitoring
-                effect: NoSchedule
+              - key: "dedicated"
+                operator: "Equal"
+                value: "monitoring"
+                effect: "NoSchedule"
             ingress:
               enabled: true
               ingressClassName: nginx
@@ -74,24 +78,28 @@ spec:
           nodeSelector:
             workload-type: monitoring
           tolerations:
-            - key: dedicated
-              operator: Equal
-              value: monitoring
-              effect: NoSchedule
+            - key: "dedicated"
+              operator: "Equal"
+              value: "monitoring"
+              effect: "NoSchedule"
+          resources:  
+            requests:
+              memory: 150Mi
+              cpu: 50m
         kube-state-metrics:
           nodeSelector:
             workload-type: monitoring
           tolerations:
-            - key: dedicated
-              operator: Equal
-              value: monitoring
-              effect: NoSchedule        
+            - key: "dedicated"
+              operator: "Equal"
+              value: "monitoring"
+              effect: "NoSchedule"        
         prometheus-node-exporter:
           tolerations:
-            - key: dedicated
-              operator: Equal
-              value: monitoring
-              effect: NoSchedule
+            - key: "dedicated"
+              operator: "Equal"
+              value: "monitoring"
+              effect: "NoSchedule"
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: monitoring
