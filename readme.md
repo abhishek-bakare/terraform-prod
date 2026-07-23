@@ -74,6 +74,8 @@ If you do not want to use AmazonLinux as a initial nodes then we need to configu
 8. Next is ArgoCD deployment through helm_release via terraform. You can see i used normal EOT instead of yamlencode bcaz TF unable to create intenet-facing LB. I wasted my whole day to debug the issue but using normal yaml syntax worked.
 9. Lets create vault now, for Vault we are creating AWS KMS key which can do auto-unseal work so no human intevention required. Then using argocd yaml maifest we are going to deploy Hashicorp Vault.
 I also created the StorageClass so Vault can get the persistent storage
+10. We created vault, nginx ingress, sonarqube and prom stack using Argoproj API in kubernetes/dev folder
+11. Lets setup AWS ECR module
 
 
 # helm show values sonarqube --repo https://SonarSource.github.io/helm-chart-sonarqube --version 10.5.1

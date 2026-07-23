@@ -54,3 +54,9 @@ module "vault_aws" {
     cluster_name = module.eks_cluster.cluster_name
 }
 
+module "ecr_repository" {
+    source = "../../../modules/ecr"
+    repository_name = var.repository_name
+    taggs = var.taggs
+}
+

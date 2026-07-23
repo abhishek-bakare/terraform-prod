@@ -23,3 +23,12 @@ variable "node_groups" {
     }))
 }
 
+variable "repository_name" {
+    description = "ECR repo name"
+    type = string
+}
+
+variable "taggs" {
+  type    = map(string)
+  default = {}
+}

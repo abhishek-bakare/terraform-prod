@@ -10,3 +10,10 @@ node_groups = {
     max_size       = 4
   }
 }
+
+repository_name = "dev-web-app-ecr"
+taggs = {
+  environment = "dev"
+  ManagedBy   = "terraform"
+  Project     = "core-apps"
+}
