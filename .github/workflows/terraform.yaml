@@ -112,9 +112,9 @@ jobs:
                 github-token: ${{ github.token }}
                 script: |
                     const fs = require('fs');       //import node.js filesystem
-                    const netPlan = fs.readFileSync('plan-net.txt','utf8')
-                    const iamPlan = fs.readFileSync('plan-iam.txt','utf8');
-                    const kubePlan = fs.readFileSync('plan-kube.txt','utf8');
+                    const netPlan = fs.readFileSync('envs/development/networking/plan-net.txt','utf8')
+                    const iamPlan = fs.readFileSync('envs/development/iam/plan-iam.txt','utf8');
+                    const kubePlan = fs.readFileSync('envs/development/kube/plan-kube.txt','utf8');
                     const output = `#### Terraform plan
                     <details><summary>Layer 1: Networking Show plan</summary>
 
